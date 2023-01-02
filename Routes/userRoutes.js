@@ -4,10 +4,10 @@ const userController = require('../Controllers/userController')
 
 const router = express.Router()
 
-router.route('/').post(userController.getLoggedInUser)
-router.post('/getSearchedUser', userController.getSearchedUser)
-
 router.post('/register', authController.register)
 router.post('/login', authController.login)
+
+router.get('/me', authController.protect, userController.getLoggedInUser)
+router.get('/:username', userController.getSearchedUser)
 
 module.exports = router

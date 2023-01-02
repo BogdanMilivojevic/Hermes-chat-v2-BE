@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const userRoutes = require('./Routes/userRoutes')
+const conversationRoutes = require('./Routes/conversationRoutes')
 
 const globalErrorHandler = require('./Controllers/errorController')
 
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/user', userRoutes)
+app.use('/conversation', conversationRoutes)
 app.use(globalErrorHandler)
 
 const port = process.env.PORT
