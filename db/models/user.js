@@ -8,11 +8,12 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate (models) {
       User.belongsToMany(models.Conversation, {
-        through: models.UserConversation
+        through: models.UserConversation, foreignKey: 'userId'
       })
     }
   }
   User.init({
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     username: {
       type: DataTypes.STRING
     },
@@ -20,14 +21,16 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING
     },
-    photoURL: DataTypes.STRING,
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true }
+    photoURL: DataTypes.STRING
   }, {
     hooks: {
       beforeCreate: async (user, options) => {
         const hashedPassword = await bcrypt.hash(user.password, 12)
         user.password = hashedPassword
       }
+    },
+    defaultScope: {
+      attributes: { exclude: ['password'] }
     },
     sequelize,
     modelName: 'User'
