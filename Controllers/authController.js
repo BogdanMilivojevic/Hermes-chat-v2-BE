@@ -4,7 +4,7 @@ const AppError = require('../Utils/AppError')
 const { promisify } = require('util')
 const db = require('../db/models/index')
 const User = db.User
-const checkPassword = require('../Utils/helpers')
+const { checkPassword } = require('../Utils/helpers')
 
 const sendToken = (user, statusCode, res) => {
   const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {

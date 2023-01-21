@@ -5,6 +5,7 @@ const Conversation = db.Conversation
 const UserConversation = db.UserConversation
 const Message = db.Message
 const { Op } = require('sequelize')
+const { createConversation } = require('../Utils/helpers')
 
 exports.index = CatchAsyncError(async (req, res, next) => {
   const conversationIds = await UserConversation.findAll({
@@ -33,7 +34,7 @@ exports.index = CatchAsyncError(async (req, res, next) => {
         include: [
           {
             model: User,
-            attributes: ['username', 'photoURL'],
+            attributes: ['username', 'photoURL', 'id'],
             where: {
               [Op.not]:
                        { id: req.user.id }
@@ -105,6 +106,59 @@ exports.show = CatchAsyncError(async (req, res, next) => {
     res.status(404).json({
       status: 'fail',
       message: 'No messages found'
+    })
+  }
+})
+
+exports.create = CatchAsyncError(async (req, res, next) => {
+  const searchedUser = await User.findAll({
+    raw: true,
+    nest: true,
+    attributes: ['id'],
+    where: {
+      username: req.body.searchedUserUsername
+    },
+    include: [
+      {
+        model: UserConversation,
+        attributes: ['conversationId']
+      }
+    ]
+  })
+
+  const currentUser = await User.findAll({
+    raw: true,
+    nest: true,
+    attributes: ['id'],
+    where: {
+      id: req.user.id
+    },
+    include: [
+      {
+        model: UserConversation,
+        attributes: ['conversationId']
+      }
+    ]
+  })
+
+  const searchedUserConversationIds = searchedUser.map(conv =>
+    conv.UserConversations.conversationId
+  )
+  const currentUserConversationIds = currentUser.map(conv =>
+    conv.UserConversations.conversationId
+  )
+
+  if (currentUserConversationIds.some(id => searchedUserConversationIds.includes(id) && id !== null)) {
+    res.status(422).json({
+      status: 'fail',
+      message: 'Conversation already exists'
+    })
+  } else {
+    const conversation = await createConversation(searchedUser[0].id, currentUser[0].id)
+    res.status(201).json({
+      status: 'sucess',
+      message: 'Conversation created',
+      conversation
     })
   }
 })

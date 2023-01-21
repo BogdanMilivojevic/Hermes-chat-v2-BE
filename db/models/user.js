@@ -10,6 +10,12 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsToMany(models.Conversation, {
         through: models.UserConversation, foreignKey: 'userId'
       })
+      User.hasMany(models.Message, {
+        foreignKey: 'userId'
+      })
+      User.hasMany(models.UserConversation, {
+        foreignKey: 'userId'
+      })
     }
   }
   User.init({
