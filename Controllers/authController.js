@@ -17,6 +17,9 @@ const sendToken = (user, statusCode, res) => {
 }
 
 exports.register = CatchAsyncError(async (req, res, next) => {
+  if (!req.body.username || !req.body.email || !req.body.password || !req.body.photoURL) {
+    return next(new AppError('Missing request parameters', 400))
+  }
   const user = await User.create({
     username: req.body.username,
     email: req.body.email,
@@ -28,6 +31,9 @@ exports.register = CatchAsyncError(async (req, res, next) => {
 })
 
 exports.login = CatchAsyncError(async (req, res, next) => {
+  if (!req.body.email || !req.body.password) {
+    return next(new AppError('Missing request parameters', 400))
+  }
   const email = req.body.email
   const password = req.body.password
 
