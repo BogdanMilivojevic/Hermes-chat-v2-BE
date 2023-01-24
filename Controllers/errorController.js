@@ -5,11 +5,6 @@ const sendError = (err, res) => {
       status: 'fail',
       message: err.errors[0].message
     })
-  } else if (err.message === 'Incorrect email or password') {
-    res.status(401).json({
-      status: 'fail',
-      message: err.message
-    })
   } else if (err.isOperational === true) {
     res.status(err.statusCode).json({
       status: 'fail',
