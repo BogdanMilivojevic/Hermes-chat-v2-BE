@@ -8,6 +8,6 @@ router.post('/register', authController.register)
 router.post('/login', authController.login)
 
 router.get('/me', authController.protect, userController.getLoggedInUser)
-router.get('/:username', userController.getSearchedUser)
+router.get('/:username', authController.protect, userController.getSearchedUser)
 
 module.exports = router

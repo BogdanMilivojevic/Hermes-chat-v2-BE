@@ -58,34 +58,34 @@ describe('register', () => {
 describe('login', () => {
   test('returns status code 200 is user had a successful login', async () => {
     const res = await request(app).post('/user/login').send({
-      email: 'john@test.com',
+      email: 'johndoe@test.com',
       password: '123456'
     })
     expect(res.statusCode).toEqual(200)
   })
   test('returns status code 401 if password is incorrect', async () => {
     const res = await request(app).post('/user/login').send({
-      email: 'john@test.com',
+      email: 'johndoe@test.com',
       password: '123456789'
     })
     expect(res.statusCode).toEqual(401)
   })
   test('returns status code 401 if email is incorrect', async () => {
     const res = await request(app).post('/user/login').send({
-      email: 'john123@test.com',
+      email: 'johndoe123@test.com',
       password: '123456'
     })
     expect(res.statusCode).toEqual(401)
   })
   test('returns status code 400 if email is missing', async () => {
     const res = await request(app).post('/user/login').send({
-      email: 'john123@test.com'
+      password: '123456'
     })
     expect(res.statusCode).toEqual(400)
   })
   test('returns status code 400 if password is missing', async () => {
     const res = await request(app).post('/user/login').send({
-      email: 'john123@test.com'
+      email: 'johndoe@test.com'
     })
     expect(res.statusCode).toEqual(400)
   })

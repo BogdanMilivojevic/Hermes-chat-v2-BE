@@ -1,5 +1,5 @@
+
 const sendError = (err, res) => {
-  console.log(err)
   if (err.message === 'Validation error') {
     res.status(422).json({
       status: 'fail',
@@ -7,6 +7,11 @@ const sendError = (err, res) => {
     })
   } else if (err.isOperational === true) {
     res.status(err.statusCode).json({
+      status: 'fail',
+      message: err.message
+    })
+  } else if (err.message === 'jwt must be provided') {
+    res.status(403).json({
       status: 'fail',
       message: err.message
     })
