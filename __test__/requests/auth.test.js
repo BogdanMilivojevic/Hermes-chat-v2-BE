@@ -3,9 +3,11 @@ const app = require(path.join(__dirname, '../../app.js'))
 const request = require('supertest')
 const db = require('../../db/models/index')
 const User = db.User
+const Conversation = db.Conversation
+const Message = db.Message
 
-afterAll(() => {
-  User.destroy({
+afterAll(async () => {
+  await User.destroy({
     truncate: true, cascade: true
   })
 })

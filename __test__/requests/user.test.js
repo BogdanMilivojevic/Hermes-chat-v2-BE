@@ -2,10 +2,14 @@ const path = require('path')
 const jwt = require('jsonwebtoken')
 const app = require(path.join(__dirname, '../../app.js'))
 const request = require('supertest')
-const { checkPassword } = require('../../Utils/helpers')
 const db = require('../../db/models/index')
-
 const User = db.User
+
+afterAll(async () => {
+  await User.destroy({
+    truncate: true, cascade: true
+  })
+})
 
 describe('checks if user info is retrieved', () => {
   let token = ''
