@@ -4,6 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "db:create":"npx sequelize-cli db:create",
+    "db:migrate":"npx sequelize-cli db:migrate",
+    "db:seed":"npx sequelize-cli db:seed",
     "test": "jest --runInBand ",
     "start": "nodemon server.js"
   },
