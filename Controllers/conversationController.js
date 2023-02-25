@@ -79,33 +79,50 @@ exports.index = CatchAsyncError(async (req, res, next) => {
 })
 
 exports.show = CatchAsyncError(async (req, res, next) => {
-  const conversation = await Conversation.findAll({
-    raw: true,
-    nest: true,
-    attributes: ['id'],
+  const conversation = await Conversation.findOne({
     where: {
       id: req.params.id
     },
-    limit: req.query.messagecount,
-    include: [
-      {
-        model: Message,
-        attributes: ['body', 'userId'],
-        where: {
-          conversationId: req.params.id
-        }
+    include: {
+      model: User,
+      attributes: ['id', 'username'],
+      through: {
+        attributes: []
       }
-    ]
+    }
   })
-  if (conversation.length > 0) {
+
+  const messages = await Message.findAll({
+    limit: req.query.messagecount,
+    // offset: req.query.messagecount
+    where: {
+      conversationId: req.params.id
+    },
+    order: [
+      ['createdAt', 'DESC']
+    ]
+
+  })
+
+  const response = {
+    id: conversation.id,
+    createdAt: conversation.createdAt,
+    updatedAt: conversation.updatedAt,
+    messages,
+    users: conversation.Users
+  }
+
+  if (messages.length > 0) {
     res.status(200).json({
       status: 'sucess',
-      conversation
+      conversation: {
+        ...response
+      }
     })
   } else {
     res.status(404).json({
       status: 'fail',
-      message: 'No messages found'
+      message: 'Conversation not found'
     })
   }
 })
