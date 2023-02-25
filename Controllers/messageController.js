@@ -33,8 +33,9 @@ exports.create = CatchAsyncError(async (req, res, next) => {
     status: 'sucess',
     message: 'Message created',
     data: {
-      text: message.dataValues.body,
-      createdAt: message.dataValues.createdAt
+      id: message.id,
+      text: message.body,
+      createdAt: message.createdAt
     }
   })
 })
