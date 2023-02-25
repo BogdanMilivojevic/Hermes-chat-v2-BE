@@ -181,13 +181,14 @@
 
 const express = require('express')
 const conversationController = require('../Controllers/conversationController')
-const authController = require('../Controllers/authController')
+const conversationPolicy = require('../policy/conversationPolicy')
+const authentication = require('../middlewares/authentication')
 
 const router = express.Router()
 
-router.get('/', authController.protect, conversationController.index)
-router.get('/:id', authController.protect, conversationController.show)
+router.get('/', authentication.protect, conversationPolicy.restrictTo('user'), conversationController.index)
+router.get('/:id', authentication.protect, conversationPolicy.restrictTo('user'), conversationPolicy.restrictConversation, conversationController.show)
 
-router.post('/', authController.protect, conversationController.create)
+router.post('/', authentication.protect, conversationPolicy.restrictTo('user'), conversationController.create)
 
 module.exports = router

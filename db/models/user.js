@@ -27,7 +27,11 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING
     },
-    photoURL: DataTypes.STRING
+    photoURL: DataTypes.STRING,
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'user'
+    }
   }, {
     hooks: {
       beforeCreate: async (user, options) => {
