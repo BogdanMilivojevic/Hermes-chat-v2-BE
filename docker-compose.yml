@@ -2,6 +2,7 @@ version: '3.7'
 services:
   app:
     build: .
+    env_file: .env
     networks:
       - database
     volumes:

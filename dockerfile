@@ -8,4 +8,10 @@ RUN npm install
 
 EXPOSE 4000
 
-CMD ["node", "server.js"]
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
+
+CMD if [ "$NODE_ENV" = "production" ]; \
+    then npm run start; \
+    else npm run dev; \
+    fi

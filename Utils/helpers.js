@@ -3,6 +3,10 @@ const { sequelize } = require('../db/models')
 const db = require('../db/models/index')
 const Conversation = db.Conversation
 const UserConversation = db.UserConversation
+const User = db.User
+const jwt = require('jsonwebtoken')
+const { promisify } = require('util')
+const AppError = require('./AppError')
 
 const checkPassword = async function (loginPassword, dbPassword) {
   return await bcrypt.compare(loginPassword, dbPassword)
@@ -39,4 +43,20 @@ const createConversation = async function (currentUserId, searchedUserId) {
   }
 }
 
-module.exports = { checkPassword, createConversation }
+const decodeJWT = async function (token, jwtENV) {
+  const decoded = await promisify(jwt.verify)(token, jwtENV)
+
+  const currentUser = await User.findOne({
+    raw: true,
+    where: {
+      id: decoded.id
+    }
+  })
+  if (!currentUser) {
+    return new AppError('The user does not exist', 401)
+  }
+
+  return currentUser
+}
+
+module.exports = { checkPassword, createConversation, decodeJWT }
