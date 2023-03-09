@@ -4,7 +4,6 @@ const AppError = require('../Utils/AppError')
 const db = require('../db/models/index')
 const User = db.User
 const { checkPassword } = require('../Utils/helpers')
-const { decodeJWT } = require('../Utils/helpers')
 
 const sendToken = (user, statusCode, res) => {
   const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -48,25 +47,4 @@ exports.login = CatchAsyncError(async (req, res, next) => {
   }
 
   sendToken(user, 200, res)
-})
-
-exports.protect = CatchAsyncError(async (req, res, next) => {
-  let token
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1]
-  }
-  const decoded = await decodeJWT(token, process.env.JWT_SECRET)
-
-  const currentUser = await User.findOne({
-    raw: true,
-    where: {
-      id: decoded.id
-    }
-  })
-  if (!currentUser) {
-    return next(new AppError('The user does not exist', 401))
-  }
-
-  req.user = currentUser
-  next()
 })

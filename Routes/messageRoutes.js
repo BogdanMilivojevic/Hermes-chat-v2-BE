@@ -62,10 +62,11 @@
  */
 const express = require('express')
 const messageController = require('../Controllers/messageController')
-const authController = require('../Controllers/authController')
+const authentication = require('../middlewares/authentication')
+const conversationPolicy = require('../policy/conversationPolicy')
 
 const router = express.Router()
 
-router.post('/:id', authController.protect, messageController.create)
+router.post('/:id', authentication.protect, conversationPolicy.restrictTo('user'), messageController.create)
 
 module.exports = router
