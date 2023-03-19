@@ -4,6 +4,7 @@ const User = db.User
 const Conversation = db.Conversation
 const UserConversation = db.UserConversation
 const Message = db.Message
+const Image = db.Image
 const { Op } = require('sequelize')
 const { createConversation } = require('../Utils/helpers')
 
@@ -24,8 +25,6 @@ exports.index = CatchAsyncError(async (req, res, next) => {
     try {
       const conversation = await Conversation.findAll({
         attributes: ['id'],
-        raw: true,
-        nest: true,
         where: {
           id: {
             [Op.or]: idArr
@@ -34,7 +33,7 @@ exports.index = CatchAsyncError(async (req, res, next) => {
         include: [
           {
             model: User,
-            attributes: ['username', 'photoURL', 'id'],
+            attributes: ['username', 'id'],
             where: {
               [Op.not]:
                        { id: req.user.id }
@@ -57,10 +56,14 @@ exports.index = CatchAsyncError(async (req, res, next) => {
             conversationId: conv.id
           }
         })
+        const image = await conv.returnImage(conv.Users[0].id, Image)
+        conv.Users[0].dataValues.photoURL = `${process.env.S3_BUCKET_URL}${image.key}`
+        conv.dataValues.User = conv.Users[0]
+        conv.dataValues.Users = undefined
         if (!lastMessage) {
           return conv
         }
-        conv.lastMessage = lastMessage
+        conv.dataValues.lastMessage = lastMessage
         return conv
       }))
       res.status(200).json({
@@ -91,6 +94,9 @@ exports.show = CatchAsyncError(async (req, res, next) => {
       }
     }
   })
+  const id = conversation.Users.find(user => user.id !== req.user.id)?.id
+  const image = await conversation.returnImage(id, Image)
+  conversation.Users.photoURL = `${process.env.S3_BUCKET_URL}${image.key}`
 
   const messages = await Message.findAll({
     limit: req.query.messagecount,
@@ -99,9 +105,23 @@ exports.show = CatchAsyncError(async (req, res, next) => {
       conversationId: req.params.id
     },
     order: [
-      ['createdAt', 'DESC']
+      ['createdAt', 'ASC']
     ]
+  })
 
+  const images = await Image.findAll({
+    where: {
+      attachableType: 'message'
+    }
+  })
+
+  messages.map(message => {
+    images.forEach(image => {
+      if (image.attachableId === message.id) {
+        message.dataValues.photoURL = `${process.env.S3_BUCKET_URL}${image.key}`
+      }
+    })
+    return message
   })
 
   const response = {

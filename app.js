@@ -38,7 +38,6 @@ app.use(function (req, res, next) {
 
 io.on('connection', async (socket) => {
   const currentUser = await decodeJWT(socket.handshake.auth.token, process.env.JWT_SECRET)
-  console.log('ROOMNAME', currentUser.username)
   if (currentUser.username) socket.join(currentUser.username)
   console.log(`client has connected, id: ${socket.id}`)
   socket.on('disconnect', () => {

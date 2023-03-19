@@ -3,6 +3,8 @@ const app = require(path.join(__dirname, '../../app.js'))
 const request = require('supertest')
 const db = require('../../db/models/index')
 const User = db.User
+const fs = require('fs')
+const avatar = fs.readFileSync(path.resolve(__dirname, './apple.jpeg'))
 
 afterAll(async () => {
   await User.destroy({
@@ -12,40 +14,32 @@ afterAll(async () => {
 
 describe('register', () => {
   test('returns status code 201 if user is created', async () => {
-    const res = await request(app).post('/user/register').send({
-      username: 'JohnDoe',
-      email: 'johndoe@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
-    })
+    const res = await request(app).post('/user/register').field('Content-Type', 'multipart/form-data').field('username', 'JohnDoe').field('email', 'johndoe@test.com').field('password', '123456').attach('avatar', avatar, 'avatar.jpg')
 
     expect(res.statusCode).toEqual(201)
   })
   test('returns bad request if username is missing', async () => {
     const res = await request(app).post('/user/register').send({
       email: 'conor@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
     })
     expect(res.statusCode).toEqual(400)
   })
   test('returns bad request if email is missing', async () => {
     const res = await request(app).post('/user/register').send({
       username: 'Conor',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
     })
     expect(res.statusCode).toEqual(400)
   })
   test('returns bad request if password is missing', async () => {
     const res = await request(app).post('/user/register').send({
       username: 'Conor',
-      email: 'conor@test.com',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      email: 'conor@test.com'
     })
     expect(res.statusCode).toEqual(400)
   })
-  test('returns bad request if photoURL is missing', async () => {
+  test('returns bad request if image is missing', async () => {
     const res = await request(app).post('/user/register').send({
       username: 'Conor',
       email: 'conor@test.com',

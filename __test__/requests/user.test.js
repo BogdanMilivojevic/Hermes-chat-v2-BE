@@ -4,9 +4,13 @@ const app = require(path.join(__dirname, '../../app.js'))
 const request = require('supertest')
 const db = require('../../db/models/index')
 const User = db.User
+const Image = db.Image
 
 afterAll(async () => {
   await User.destroy({
+    truncate: true, cascade: true
+  })
+  await Image.destroy({
     truncate: true, cascade: true
   })
 })
@@ -17,8 +21,12 @@ describe('checks if user info is retrieved', () => {
     const user = await User.create({
       username: 'JohnConnor',
       email: 'johnconnor@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user.id,
+      key: 'user.jpg'
     })
     token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`
@@ -40,8 +48,12 @@ describe('checks if user can search for another user', () => {
     const user = await User.create({
       username: 'Jimmy',
       email: 'jimmy@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user.id,
+      key: 'user.jpg'
     })
     token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`

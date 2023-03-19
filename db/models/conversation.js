@@ -22,5 +22,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Conversation'
   })
+  Conversation.prototype.returnImage = async function (userId, model) {
+    const image = await model.findOne({
+      where: {
+        attachableType: 'user',
+        attachableId: userId
+      }
+    })
+    return image
+  }
   return Conversation
 }
