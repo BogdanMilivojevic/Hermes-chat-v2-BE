@@ -149,10 +149,21 @@ const authController = require('../Controllers/authController')
 const userController = require('../Controllers/userController')
 const authentication = require('../middlewares/authentication')
 const conversationPolicy = require('../policy/conversationPolicy')
+const multer = require('multer')
+const AppError = require('../Utils/AppError')
+const upload = multer({
+  limits: { fileSize: 4194304 },
+  fileFilter (req, file, callback) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return callback(new AppError('Please upload a valid image file', 422))
+    }
+    callback(undefined, true)
+  }
+})
 
 const router = express.Router()
 
-router.post('/register', authController.register)
+router.post('/register', upload.single('avatar'), authController.register)
 router.post('/login', authController.login)
 
 router.get('/me', authentication.protect, conversationPolicy.restrictTo('user'), userController.getLoggedInUser)

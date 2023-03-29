@@ -8,6 +8,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate (models) {
       Message.belongsTo(models.User, { foreignKey: 'id' })
       Message.belongsTo(models.Conversation, { foreignKey: 'id' })
+      Message.hasOne(models.Image, {
+        foreignKey: 'attachableType',
+        constraints: false,
+        scope: {
+          attachableType: 'message'
+        }
+      })
     }
   }
   Message.init({

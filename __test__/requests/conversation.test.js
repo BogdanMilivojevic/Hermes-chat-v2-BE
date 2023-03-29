@@ -7,6 +7,7 @@ const { createConversation } = require('../../Utils/helpers')
 const User = db.User
 const Message = db.Message
 const Conversation = db.Conversation
+const Image = db.Image
 
 afterAll(async () => {
   await User.destroy({
@@ -18,6 +19,9 @@ afterAll(async () => {
   await Message.destroy({
     truncate: true, cascade: true
   })
+  await Image.destroy({
+    truncate: true, cascade: true
+  })
 })
 
 describe('checks if all conversations are retrieved', () => {
@@ -27,8 +31,12 @@ describe('checks if all conversations are retrieved', () => {
     const alice = await User.create({
       username: 'Alice',
       email: 'alice@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: alice.id,
+      key: 'alice.jpg'
     })
     tokenAlice = jwt.sign({ id: alice.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`
@@ -36,14 +44,22 @@ describe('checks if all conversations are retrieved', () => {
     const bob = await User.create({
       username: 'Bob',
       email: 'bob@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: bob.id,
+      key: 'bob.jpg'
     })
     const jacob = await User.create({
       username: 'Jacob',
       email: 'jacob555@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: jacob.id,
+      key: 'jacob.jpg'
     })
     tokenJacob = jwt.sign({ id: jacob.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`
@@ -82,8 +98,12 @@ describe('checks if messages for a certain conversations are retrieved', () => {
     const patrick = await User.create({
       username: 'Patrick',
       email: 'patrick@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: patrick.id,
+      key: 'patrick.jpg'
     })
     patrickToken = jwt.sign({ id: patrick.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`
@@ -91,14 +111,22 @@ describe('checks if messages for a certain conversations are retrieved', () => {
     const stuart = await User.create({
       username: 'Stuart',
       email: 'stuart@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: stuart.id,
+      key: 'stuart.jpg'
     })
     const george = await User.create({
       username: 'George',
       email: 'george@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: george.id,
+      key: 'george.jpg'
     })
     georgeToken = jwt.sign({ id: george.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`
@@ -135,8 +163,12 @@ describe('checks if a new conversation is created', () => {
     const martha = await User.create({
       username: 'Martha',
       email: 'martha@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: martha.id,
+      key: 'martha.jpg'
     })
     marthaToken = jwt.sign({ id: martha.id }, process.env.JWT_SECRET, {
       expiresIn: `${process.env.JWT_EXPIRES_IN}`

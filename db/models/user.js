@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.UserConversation, {
         foreignKey: 'userId'
       })
+      User.hasOne(models.Image, {
+        foreignKey: 'attachableType',
+        constraints: false,
+        scope: {
+          attachableType: 'user'
+        }
+      })
     }
   }
   User.init({
@@ -27,7 +34,6 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING
     },
-    photoURL: DataTypes.STRING,
     role: {
       type: DataTypes.STRING,
       defaultValue: 'user'
@@ -45,5 +51,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User'
   })
+  User.prototype.returnImage = async function (userId, model) {
+    const image = await model.findOne({
+      where: {
+        attachableType: 'user',
+        attachableId: userId
+      }
+    })
+    return image
+  }
   return User
 }

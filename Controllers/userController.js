@@ -1,6 +1,7 @@
 const CatchAsyncError = require('../Utils/CatchAsyncError')
 const db = require('../db/models/index')
 const User = db.User
+const Image = db.Image
 
 exports.getLoggedInUser = CatchAsyncError(async (req, res, next) => {
   const user = req.user
@@ -14,14 +15,15 @@ exports.getLoggedInUser = CatchAsyncError(async (req, res, next) => {
 
 exports.getSearchedUser = CatchAsyncError(async (req, res, next) => {
   const username = req.params.username
-
   const user = await User.findOne({
-    raw: true,
     where: {
       username
     }
   })
+
   if (user) {
+    const image = await user.returnImage(user.id, Image)
+    user.dataValues.photoURL = `${process.env.S3_BUCKET_URL}${image.key}`
     res.status(200).json({
       status: 'success',
       message: 'User found',

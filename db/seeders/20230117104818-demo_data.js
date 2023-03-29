@@ -4,6 +4,7 @@ const User = db.User
 const Conversation = db.Conversation
 const UserConversation = db.UserConversation
 const Message = db.Message
+const Image = db.Image
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -11,14 +12,22 @@ module.exports = {
     const user1 = await User.create({
       username: 'John',
       email: 'john@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFjZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user1.id,
+      key: 'john.jpg'
     })
     const user2 = await User.create({
       username: 'Peter',
       email: 'peter@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8ZmFjZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user2.id,
+      key: 'peter.jpg'
     })
     const conversation1 = await Conversation.create({
     })
@@ -44,8 +53,12 @@ module.exports = {
     const user3 = await User.create({
       username: 'Jack',
       email: 'jack@test.com',
-      password: '123456',
-      photoURL: 'https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8ZmFjZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60'
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user3.id,
+      key: 'jack.jpg'
     })
     const conversation2 = await Conversation.create({
     })
