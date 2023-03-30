@@ -112,6 +112,34 @@
  *       description: JWT must be provided
  *      404:
  *       description: User doesn't exist
+ * /user/update:
+ *  patch:
+ *   summary: Update user's username
+ *   security:
+ *    - Authorization: []
+ *   tags: [Users]
+ *   requestBody:
+ *    required: true
+ *    content:
+ *     application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/User'
+ *       examples:
+ *        sample:
+ *         value:
+ *          newName: Jacob
+ *   responses:
+ *     200:
+ *      description: Username updated
+ *      content:
+ *       application/json:
+ *         example:
+ *          status: success
+ *          message: Username updated
+ *     403:
+ *      description: JWT must be provided
+ *     422:
+ *      description: username must be unique
  * /user/{username}:
  *  get:
  *   summary: Get user by username
@@ -148,7 +176,6 @@ const express = require('express')
 const authController = require('../Controllers/authController')
 const userController = require('../Controllers/userController')
 const authentication = require('../middlewares/authentication')
-const conversationPolicy = require('../policy/conversationPolicy')
 const multer = require('multer')
 const AppError = require('../Utils/AppError')
 const upload = multer({
@@ -166,7 +193,8 @@ const router = express.Router()
 router.post('/register', upload.single('avatar'), authController.register)
 router.post('/login', authController.login)
 
-router.get('/me', authentication.protect, conversationPolicy.restrictTo('user'), userController.getLoggedInUser)
-router.get('/:username', authentication.protect, conversationPolicy.restrictTo('user'), userController.getSearchedUser)
+router.get('/me', authentication.protect, userController.getLoggedInUser)
+router.patch('/me', authentication.protect, userController.update)
+router.get('/:username', authentication.protect, userController.getSearchedUser)
 
 module.exports = router

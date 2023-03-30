@@ -1,5 +1,6 @@
 
 const sendError = (err, res) => {
+  console.log(err)
   if (err.message === 'Validation error') {
     res.status(422).json({
       status: 'fail',
