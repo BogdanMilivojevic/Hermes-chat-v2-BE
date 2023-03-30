@@ -6,7 +6,7 @@ const UserConversation = db.UserConversation
 const Message = db.Message
 const Image = db.Image
 const { Op } = require('sequelize')
-const { createConversation } = require('../Utils/helpers')
+const { createConversation, deleteConversation } = require('../Utils/helpers')
 
 exports.index = CatchAsyncError(async (req, res, next) => {
   const conversationIds = await UserConversation.findAll({
@@ -56,12 +56,15 @@ exports.index = CatchAsyncError(async (req, res, next) => {
             conversationId: conv.id
           }
         })
+
         const image = await conv.returnImage(conv.Users[0].id, Image)
         conv.Users[0].dataValues.photoURL = `${process.env.S3_BUCKET_URL}${image.key}`
         conv.dataValues.User = conv.Users[0]
         conv.dataValues.Users = undefined
         if (!lastMessage) {
           return conv
+        } else if (lastMessage.body === null) {
+          lastMessage.image = 'image'
         }
         conv.dataValues.lastMessage = lastMessage
         return conv
@@ -198,4 +201,12 @@ exports.create = CatchAsyncError(async (req, res, next) => {
       conversation
     })
   }
+})
+
+exports.delete = CatchAsyncError(async (req, res, next) => {
+  await deleteConversation(req.params.id)
+  res.status(204).json({
+    status: 'success',
+    message: 'Conversation deleted'
+  })
 })

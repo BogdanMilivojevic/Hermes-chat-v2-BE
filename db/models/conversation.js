@@ -9,9 +9,11 @@ module.exports = (sequelize, DataTypes) => {
         through: models.UserConversation, foreignKey: 'conversationId'
       })
       Conversation.hasMany(models.Message, {
+        onDelete: 'CASCADE',
         foreignKey: 'conversationId'
       })
       Conversation.hasMany(models.UserConversation, {
+        onDelete: 'CASCADE',
         foreignKey: 'conversationId'
       })
     }
