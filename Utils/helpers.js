@@ -43,6 +43,21 @@ const createConversation = async function (currentUserId, searchedUserId) {
   }
 }
 
+const deleteConversation = async function (chatId) {
+  const t = await sequelize.transaction()
+  try {
+    await Conversation.destroy({
+      where: {
+        id: chatId
+      }
+    }, { transaction: t })
+    return
+  } catch (err) {
+    console.log(err)
+    await t.rollback()
+  }
+}
+
 const decodeJWT = async function (token, jwtENV) {
   const decoded = await promisify(jwt.verify)(token, jwtENV)
 
@@ -59,4 +74,4 @@ const decodeJWT = async function (token, jwtENV) {
   return currentUser
 }
 
-module.exports = { checkPassword, createConversation, decodeJWT }
+module.exports = { checkPassword, createConversation, decodeJWT, deleteConversation }

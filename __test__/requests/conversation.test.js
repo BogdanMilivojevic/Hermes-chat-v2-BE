@@ -196,3 +196,43 @@ describe('checks if a new conversation is created', () => {
     expect(res.statusCode).toEqual(403)
   })
 })
+
+describe('checks if conversation is deleted', () => {
+  let khabibToken = ''
+  let conversation = ''
+  beforeAll(async () => {
+    const khabib = await User.create({
+      username: 'Khabib',
+      email: 'khabib@test.com',
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: khabib.id,
+      key: 'alice.jpg'
+    })
+    khabibToken = jwt.sign({ id: khabib.id }, process.env.JWT_SECRET, {
+      expiresIn: `${process.env.JWT_EXPIRES_IN}`
+    })
+    const mcgregor = await User.create({
+      username: 'Mcgregor',
+      email: 'mcgregor@test.com',
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: mcgregor.id,
+      key: 'bob.jpg'
+    })
+
+    conversation = await createConversation(khabib.id, mcgregor.id)
+  })
+  test('returns status code 204 if conversation is deleted', async () => {
+    const res = await request(app).delete(`/conversation/${conversation?.conversationId}`).set('Authorization', `Bearer ${khabibToken}`)
+    expect(res.statusCode).toEqual(204)
+  })
+  test('returns status code 403 if jwt is missing', async () => {
+    const res = await request(app).delete(`/conversation/${conversation?.conversationId}`)
+    expect(res.statusCode).toEqual(403)
+  })
+})

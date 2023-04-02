@@ -112,7 +112,6 @@
  *       description: JWT must be provided
  *      404:
  *       description: User doesn't exist
- * /user/update:
  *  patch:
  *   summary: Update user's username
  *   security:

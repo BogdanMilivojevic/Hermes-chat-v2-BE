@@ -176,6 +176,22 @@
  *       description: JWT must be provided
  *      404:
  *       description: Conversation not found
+ * /conversation/${id}:
+ *   delete:
+ *    summary: Get a conversation
+ *    security:
+ *     - Authorization: []
+ *    tags: [Conversations]
+ *    parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *    responses:
+ *      204:
+ *       description: Conversation deleted
+ *      403:
+ *       description: JWT must be provided
+ *
  *
  */
 
@@ -188,7 +204,7 @@ const router = express.Router()
 
 router.get('/', authentication.protect, conversationPolicy.restrictTo('user'), conversationController.index)
 router.get('/:id', authentication.protect, conversationPolicy.restrictTo('user'), conversationPolicy.restrictConversation, conversationController.show)
+router.delete('/:id', authentication.protect, conversationPolicy.restrictTo('user'), conversationController.delete)
 
 router.post('/', authentication.protect, conversationPolicy.restrictTo('user'), conversationController.create)
-
 module.exports = router
