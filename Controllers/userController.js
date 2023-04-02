@@ -36,3 +36,20 @@ exports.getSearchedUser = CatchAsyncError(async (req, res, next) => {
     })
   }
 })
+
+exports.update = CatchAsyncError(async (req, res, next) => {
+  const newName = req.body.newName
+
+  await User.update({
+    username: newName
+  }, {
+    where: {
+      id: req.user.id
+    }
+  })
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Username updated'
+  })
+})

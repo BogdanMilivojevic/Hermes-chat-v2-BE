@@ -72,3 +72,48 @@ describe('checks if user can search for another user', () => {
     expect(res.statusCode).toEqual(403)
   })
 })
+
+describe('checks if user can update its username', () => {
+  let token = ''
+  beforeAll(async () => {
+    const user = await User.create({
+      username: 'Joshua',
+      email: 'joshua@test.com',
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: user.id,
+      key: 'user.jpg'
+    })
+    const userTwo = await User.create({
+      username: 'Craig',
+      email: 'craig@test.com',
+      password: '123456'
+    })
+    await Image.create({
+      attachableType: 'user',
+      attachableId: userTwo.id,
+      key: 'user.jpg'
+    })
+    token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: `${process.env.JWT_EXPIRES_IN}`
+    })
+  })
+  test('returns status code 200 if user can update its username', async () => {
+    const res = await request(app).patch('/user/me').send({
+      newName: 'Joshua'
+    }).set('Authorization', `Bearer ${token}`)
+    expect(res.body.message).toEqual('Username updated')
+  })
+  test('returns status code 403 if jwt is missing', async () => {
+    const res = await request(app).patch('/user/me')
+    expect(res.statusCode).toEqual(403)
+  })
+  test('returns status code 422 if username is already taken', async () => {
+    const res = await request(app).patch('/user/me').send({
+      newName: 'Craig'
+    }).set('Authorization', `Bearer ${token}`)
+    expect(res.statusCode).toEqual(422)
+  })
+})
