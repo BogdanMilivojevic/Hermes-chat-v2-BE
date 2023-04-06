@@ -18,7 +18,12 @@ const port = process.env.PORT
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  methods: '*'
+}
+app.use(cors(corsOptions))
 
 const server = http.createServer(app)
 
