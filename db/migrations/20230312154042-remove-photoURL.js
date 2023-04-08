@@ -9,6 +9,8 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.addColumn('Users', 'photoURL')
+    await queryInterface.addColumn('Users', 'photoURL', {
+      type: Sequelize.STRING
+    })
   }
 }

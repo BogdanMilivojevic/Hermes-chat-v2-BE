@@ -23,6 +23,7 @@ module.exports = {
       },
       conversationId: {
         type: Sequelize.DataTypes.INTEGER,
+        onDelete: 'CASCADE',
         references: {
           model: {
             tableName: 'Conversations'
